@@ -27,6 +27,24 @@ class TipoToken:
     # erro token, nao esta presente gramatica
     ERROR = (15, 'ERRO')
     EOF = (16, 'EOF')
+    BEGIN = (17, 'BEGIN')
+    END = (18, 'END')
+    READ = (19, 'READ')
+    FECHAPAR = (20, ')')
+    ABREPAR = (21, '(')
+    CIF = (22, '$')
+    DIFERENTE = (23, '<>')
+    MAIORIGUAL = (24, '>=')
+    MENORIGUAL = (25, '<=')
+    MAIOR = (26, '>')
+    MENOR = (27, '<')
+    IGUAL = (28, '=')
+    SUBTRACAO = (29, '-')
+    SOMA = (30, '+')
+    MULTIPLICACAO = (31, '*')
+    DIVISAO = (32, '/')
+    ELSE = (33, 'ELSE')
+    WRITE = (34, 'WRITE')
 
 class Token:
     def __init__(self, tipo, lexema, linha):
@@ -45,7 +63,10 @@ class Lexico:
         'INTEGER': TipoToken.INTEGER,
         'REAL': TipoToken.REAL,
         'IF': TipoToken.IF,
-        'THEN': TipoToken.THEN
+        'THEN': TipoToken.THEN,
+        'BEGIN': TipoToken.BEGIN,
+        'READ': TipoToken.READ,
+        'WRITE': TipoToken.WRITE,
     }
 
     def __init__(self, nomeArquivo):
