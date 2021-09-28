@@ -58,32 +58,32 @@ class Sintatico:
         
     def corpo(self):
         print('<corpo>')
-        self.dc()
+        self.declara()
         
         self.consome(tt.BEGIN)
         self.comandos()
         self.consome(tt.END)
         
-    def dc(self):
+    def declara(self):
         print('<dc>')
         if self.atualIgual(tt.REAL) or self.atualIgual(tt.INTEGER):
-            self.dc_v()
-            self.mais_dc()
+            self.declara_var()
+            self.continua_declaracao()
             
-    def mais_dc(self):
+    def continua_declaracao(self):
         print('<mais_dc>')
         if self.atualIgual(tt.PVIRG):
             self.consome(tt.PVIRG)
-            self.dc()
+            self.declara()
     
-    def dc_v(self):
+    def declara_var(self):
         print('<dc_v>')
-        self.tipo_var()
+        self.tipo_variavel()
         
         self.consome(tt.DPONTOS)
         self.variaveis()
         
-    def tipo_var(self):
+    def tipo_variavel(self):
         print('<tipo_Var>')
         if self.atualIgual(tt.REAL):
             self.consome(tt.REAL)
@@ -92,6 +92,7 @@ class Sintatico:
         
     def variaveis(self):
         print('<variaveis>')
+        print('VARIAVEL ATUAL: ', self.tokenAtual.msg)
         self.consome(tt.ID)
         self.mais_var()
         
@@ -116,15 +117,15 @@ class Sintatico:
     def comando(self):
         print('<comando>')
         if self.atualIgual(tt.READ):
-            self.consome(tt.READ)
-            
+            # self.consome(tt.READ)
+            print('atual: ', self.tokenAtual.msg)
             if self.atualIgual(tt.ABREPAR):
                 self.consome(tt.ABREPAR)
                 self.consome(tt.ID)
                 self.consome(tt.FECHAPAR)
         
         elif self.atualIgual(tt.WRITE):
-            self.consome(tt.READ)
+            self.consome(tt.WRITE)
             
             if self.atualIgual(tt.ABREPAR):
                 self.consome(tt.ABREPAR)
@@ -137,7 +138,7 @@ class Sintatico:
             
             self.consome(tt.THEN)
             self.comandos()
-            self.p_falsa()
+            self.falsa_condicao()
             
             self.consome(tt.CIF)
             
@@ -175,11 +176,11 @@ class Sintatico:
     
     def termo():
         print('<termo>')
-        self.op_un()
+        self.subtracao()
         self.fator()
         self.mais_fatores()
         
-    def op_un(self):
+    def subtracao(self):
         print('<op_un>')
         if self.atualIgual(tt.SUBTRACAO):
             self.consome(tt.SUBTRACAO)
@@ -226,7 +227,7 @@ class Sintatico:
             self.consome(tt.DIVISAO)
         
         
-    def p_falsa(self):
+    def falsa_condicao(self):
         print('<p_falsa>')
         self.consome(tt.ELSE)
         self.comandos()
