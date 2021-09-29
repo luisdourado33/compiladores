@@ -56,6 +56,8 @@ class Sintatico:
         self.consome(tt.ID)
         self.corpo()
         
+        self.consome(tt.PONTO)
+        
     def corpo(self):
         print('<corpo>')
         self.declara()
@@ -109,7 +111,6 @@ class Sintatico:
         
     def mais_comandos(self):
         print('<mais_comandos>')
-        print(self.tokenAtual.tipo)
         if self.atualIgual(tt.PVIRG):
             self.consome(tt.PVIRG)
             self.comandos()
@@ -117,12 +118,14 @@ class Sintatico:
     def comando(self):
         print('<comando>')
         if self.atualIgual(tt.READ):
-            # self.consome(tt.READ)
+            self.consome(tt.READ)
             print('atual: ', self.tokenAtual.msg)
             if self.atualIgual(tt.ABREPAR):
+                print('Abriu parenteses')
                 self.consome(tt.ABREPAR)
                 self.consome(tt.ID)
-                self.consome(tt.FECHAPAR)
+                if self.atualIgual(tt.FECHAPAR):
+                    self.consome(tt.FECHAPAR)
         
         elif self.atualIgual(tt.WRITE):
             self.consome(tt.WRITE)
@@ -130,7 +133,8 @@ class Sintatico:
             if self.atualIgual(tt.ABREPAR):
                 self.consome(tt.ABREPAR)
                 self.consome(tt.ID)
-                self.consome(tt.FECHAPAR)
+                if self.atualIgual(tt.FECHAPAR):
+                    self.consome(tt.FECHAPAR)
                 
         elif self.atualIgual(tt.IF):
             self.consome(tt.IF)
@@ -174,7 +178,7 @@ class Sintatico:
         self.termo()
         self.outros_termos()
     
-    def termo():
+    def termo(self):
         print('<termo>')
         self.subtracao()
         self.fator()
