@@ -151,8 +151,6 @@ class Lexico:
                 elif car.isdigit():
                     estado = 2
                 elif car in {':', '=', '<', '>', ',', ';', '+', '-', '*', '(', ')', '{', '}', '$', '.'}:
-                    '''if car == ';':'''
-                    '''self.linha += 1'''
                     estado = 3
                 elif car == '/':
                     lexema = car
@@ -190,6 +188,7 @@ class Lexico:
                         return Token(TipoToken.ATRIB, lexema, self.linha)
                     else:
                         self.ungetChar(lexema[-1])
+                        
                         return Token(TipoToken.DPONTOS, car, self.linha)
                 elif car == ';':
                     return Token(TipoToken.PVIRG, car, self.linha)
