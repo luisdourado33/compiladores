@@ -1,7 +1,10 @@
 """
 Universidade Federal de Mato Grosso - UFMT
-Luís Antônio da Silva Dourado
+
+Aluno: Luis Antonio da Silva Dourado
+RGA: 201621901003
 <luis_dourado33@hotmail.com>
+
 """
 
 from lexico import TipoToken as tt, Token, Lexico
