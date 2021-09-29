@@ -36,7 +36,7 @@ class Sintatico:
 
     def consome(self, token):
         if self.atualIgual(token):
-            print(self.tokenAtual.lexema)
+            print(self.tokenAtual.tipo)
             self.tokenAtual = self.lex.getToken()
             if self.gerar_tokens:
                 self.tokens.append(self.tokenAtual)
