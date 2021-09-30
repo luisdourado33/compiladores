@@ -112,6 +112,8 @@ class Sintatico:
             self.tipo = Semantico('INTEGER', tt.INTEGER)
             self.is_declarando = True
             self.consome(tt.INTEGER)
+        else:
+            print('Erro sintático era esperado INTEGER ou REAL ', self.tokenAtual.lexema ,' dado')
 
     def variaveis(self):
         print('<variaveis>')
