@@ -29,7 +29,8 @@ class Sintatico:
         # Codigo intermediario
         self.temp = 0
         self.codigo = 'operador;arg1;arg2;result\n'
-
+        self.codigo_gerado = ''
+        
     def interprete(self, nomeArquivo):
         if not self.lex is None:
             print('ERRO: Ja existe um arquivo sendo processado.')
@@ -150,6 +151,7 @@ class Sintatico:
         if self.atualIgual(tt.READ):
             self.consome(tt.READ)
             if self.atualIgual(tt.ABREPAR):
+                
                 self.consome(tt.ABREPAR)
                 self.consome(tt.ID)
                 if self.atualIgual(tt.FECHAPAR):
