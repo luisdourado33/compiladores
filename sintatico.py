@@ -8,7 +8,7 @@ RGA: 201621901003
 """
 
 from semantico import Semantico
-from lexico import TipoToken as tt, Token, Lexico
+from lexico import TipoToken as tt, Lexico
 
 
 class Sintatico:
@@ -19,9 +19,13 @@ class Sintatico:
         self.gerar_tokens = gerar_tokens
         self.tokens = []
         self.tabela_simbolos = []
+        self.tabela_tipo = []
+        self.values = []
+        self.operadores = []
         self.tipo = None
         self.is_declarando = False
-
+        self.is_atribuindo = False
+        
         # Codigo intermediario
         self.temp = 0
         self.codigo = 'operador;arg1;arg2;result\n'
@@ -46,8 +50,8 @@ class Sintatico:
         return self.tokenAtual.const == const
 
     def consome(self, token):
+        print(self.tokenAtual.lexema)
         if self.atualIgual(token):
-            print(self.tokenAtual.tipo)
             self.tokenAtual = self.lex.getToken()
             if self.gerar_tokens:
                 self.tokens.append(self.tokenAtual)
@@ -60,6 +64,7 @@ class Sintatico:
     def P(self):
         self.escopo()
         self.consome(tt.EOF)
+        print('Tudo certo!')
 
     def escopo(self):
         self.consome(tt.PROGRAM)
@@ -69,7 +74,7 @@ class Sintatico:
         self.consome(tt.PONTO)
 
     def corpo(self):
-        # print('<corpo>')
+        print('<corpo>')
         self.declara()
 
         self.consome(tt.BEGIN)
@@ -77,26 +82,26 @@ class Sintatico:
         self.consome(tt.END)
 
     def declara(self):
-        # print('<dc>')
+        print('<dc>')
         if self.atualIgual(tt.REAL) or self.atualIgual(tt.INTEGER):
             self.declara_var()
             self.continua_declaracao()
 
     def continua_declaracao(self):
-        # print('<mais_dc>')
+        print('<mais_dc>')
         if self.atualIgual(tt.PVIRG):
             self.consome(tt.PVIRG)
             self.declara()
 
     def declara_var(self):
-        # print('<dc_v>')
+        print('<dc_v>')
         self.tipo_variavel()
 
         self.consome(tt.DPONTOS)
         self.variaveis()
 
     def tipo_variavel(self):
-        # print('<tipo_Var>')
+        print('<tipo_var>')
         if self.atualIgual(tt.REAL):
             self.tipo = Semantico('INTEGER', tt.REAL)
             self.is_declarando = True
@@ -108,13 +113,11 @@ class Sintatico:
             self.consome(tt.INTEGER)
 
     def variaveis(self):
-        # print('<variaveis>')
-        print(self.tabela_simbolos)
+        print('<variaveis>')
         if self.is_declarando:
             # checa se existe o lexema
             if self.tokenAtual.lexema in self.tabela_simbolos:
-                print('Erro semântico identificador ',
-                      self.tokenAtual.lexema, ' já encontrado.\n')
+                print('Erro semântico identificador ', self.tokenAtual.lexema, ' já declarado.\n')
                 quit()
             else:
                 self.tabela_simbolos.append(self.tokenAtual.lexema)
@@ -125,25 +128,25 @@ class Sintatico:
         self.mais_var()
 
     def mais_var(self):
-        # print('<mais_var>')
+        print('<mais_var>')
         if self.atualIgual(tt.VIRG):
             self.consome(tt.VIRG)
             self.is_declarando = True
             self.variaveis()
 
     def comandos(self):
-        # print('<comandos>')
+        print('<comandos>')
         self.comando()
         self.mais_comandos()
 
     def mais_comandos(self):
-        # print('<mais_comandos>')
+        print('<mais_comandos>')
         if self.atualIgual(tt.PVIRG):
             self.consome(tt.PVIRG)
             self.comandos()
 
     def comando(self):
-        # print('<comando>')
+        print('<comando>')
         if self.atualIgual(tt.READ):
             self.consome(tt.READ)
             if self.atualIgual(tt.ABREPAR):
@@ -178,13 +181,13 @@ class Sintatico:
             self.expressao()
 
     def condicao(self):
-        # print('<condicao>')
+        print('<condicao>')
         self.expressao()
         self.relacao()
         self.expressao()
 
     def relacao(self):
-        # print('<relacao>')
+        print('<relacao>')
         if self.atualIgual(tt.IGUAL):
             self.consome(tt.IGUAL)
         if self.atualIgual(tt.DIFERENTE):
@@ -199,24 +202,26 @@ class Sintatico:
             self.consome(tt.MENOR)
 
     def expressao(self):
-        # print('<expressao>')
+        print('<expressao>')
         self.termo()
         self.outros_termos()
 
     def termo(self):
-        # print('<termo>')
+        print('<termo>')
         self.subtracao()
         self.fator()
         self.mais_fatores()
 
     def subtracao(self):
-        # print('<op_un>')
+        print('<op_un>')
         if self.atualIgual(tt.SUBTRACAO):
             self.consome(tt.SUBTRACAO)
 
     def fator(self):
-        # print('<fator>')
+        print('<fator>')
         if self.atualIgual(tt.ID):
+            if self.tokenAtual.lexema not in self.values:
+                self.values.append(self.tokenAtual.lexema)
             self.consome(tt.ID)
         elif self.atualIgual(tt.ABREPAR):
             self.consome(tt.ABREPAR)
@@ -226,36 +231,40 @@ class Sintatico:
                 self.consome(tt.FECHAPAR)
 
     def outros_termos(self):
-        # print('<outros_termos>')
+        print('<outros_termos>')
         if self.atualIgual(tt.SOMA) or self.atualIgual(tt.SUBTRACAO):
             self.op_ad()
             self.termo()
             self.outros_termos()
 
     def op_ad(self):
-        # print('<op_ad>')
+        print('<op_ad>')
         if self.atualIgual(tt.SOMA):
+            self.operadores.append(self.tokenAtual.lexema)
             self.consome(tt.SOMA)
 
         if self.atualIgual(tt.SUBTRACAO):
+            self.operadores.append(self.tokenAtual.lexema)
             self.consome(tt.SUBTRACAO)
-
+            
     def mais_fatores(self):
-        # print('<mais_fatores>')
+        print('<mais_fatores>')
         if self.atualIgual(tt.MULTIPLICACAO) or self.atualIgual(tt.DIVISAO):
             self.op_mul()
             self.fator()
             self.mais_fatores()
 
     def op_mul(self):
-        # print('<op_mul>')
+        print('<op_mul>')
         if self.atualIgual(tt.MULTIPLICACAO):
+            self.operadores.append(self.tokenAtual.lexema)
             self.consome(tt.MULTIPLICACAO)
         else:
+            self.operadores.append(self.tokenAtual.lexema)
             self.consome(tt.DIVISAO)
 
     def falsa_condicao(self):
-        # print('<p_falsa>')
+        print('<p_falsa>')
         self.consome(tt.ELSE)
         self.comandos()
 

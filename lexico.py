@@ -114,7 +114,7 @@ class Lexico:
         elif len(self.buffer) > 0:
             c = self.buffer[0]
             self.buffer = self.buffer[1:]
-            print(c.lower())
+
             return c.lower()
         else:
             c = ''
