@@ -7,6 +7,7 @@ RGA: 201621901003
 
 """
 
+from semantico import Semantico
 from lexico import TipoToken as tt, Token, Lexico
 
 
@@ -17,6 +18,13 @@ class Sintatico:
         self.tokenAtual = None
         self.gerar_tokens = gerar_tokens
         self.tokens = []
+        self.tabela_simbolos = []
+        self.tipo = None
+        self.is_declarando = False
+
+        # Codigo intermediario
+        self.temp = 0
+        self.codigo = 'operador;arg1;arg2;result\n'
 
     def interprete(self, nomeArquivo):
         if not self.lex is None:
@@ -51,6 +59,7 @@ class Sintatico:
 
     def P(self):
         self.escopo()
+        self.consome(tt.EOF)
 
     def escopo(self):
         self.consome(tt.PROGRAM)
@@ -89,19 +98,37 @@ class Sintatico:
     def tipo_variavel(self):
         # print('<tipo_Var>')
         if self.atualIgual(tt.REAL):
+            self.tipo = Semantico('INTEGER', tt.REAL)
+            self.is_declarando = True
             self.consome(tt.REAL)
+
         elif self.atualIgual(tt.INTEGER):
+            self.tipo = Semantico('INTEGER', tt.INTEGER)
+            self.is_declarando = True
             self.consome(tt.INTEGER)
 
     def variaveis(self):
         # print('<variaveis>')
-        self.consome(tt.ID)
+        print(self.tabela_simbolos)
+        if self.is_declarando:
+            # checa se existe o lexema
+            if self.tokenAtual.lexema in self.tabela_simbolos:
+                print('Erro semântico identificador ',
+                      self.tokenAtual.lexema, ' já encontrado.\n')
+                quit()
+            else:
+                self.tabela_simbolos.append(self.tokenAtual.lexema)
+                self.is_declarando = False
+                self.consome(tt.ID)
+        else:
+            self.consome(tt.ID)
         self.mais_var()
 
     def mais_var(self):
         # print('<mais_var>')
         if self.atualIgual(tt.VIRG):
             self.consome(tt.VIRG)
+            self.is_declarando = True
             self.variaveis()
 
     def comandos(self):
@@ -231,3 +258,12 @@ class Sintatico:
         # print('<p_falsa>')
         self.consome(tt.ELSE)
         self.comandos()
+
+    def busca(self, id):
+        return id in self.tabela_simbolos
+
+    def gera_temp(self):
+        return "t" + str(self.temp + 1)
+
+    def code(self, op, arg1, arg2, result):
+        self.codigo.join(op + ";" + arg1 + ";" + arg2 + ";" + result + "\n")
