@@ -42,7 +42,7 @@ class Sintatico:
             if self.gerar_tokens:
                 self.tokens.append(self.tokenAtual)
 
-            self.P()
+            self.programa()
 
             self.lex.fechaArquivo()
 
@@ -62,46 +62,43 @@ class Sintatico:
                   % (self.tokenAtual.linha, msg, self.tokenAtual.lexema))
             quit()
 
-    def P(self):
-        self.escopo()
-        self.consome(tt.EOF)
-        print('Tudo certo!')
-
-    def escopo(self):
+    def programa(self):
         self.consome(tt.PROGRAM)
         self.consome(tt.ID)
         self.corpo()
 
         self.consome(tt.PONTO)
+        self.consome(tt.EOF)
+        print('Tudo certo!')
 
     def corpo(self):
         print('<corpo>')
-        self.declara()
+        self.dc()
 
         self.consome(tt.BEGIN)
         self.comandos()
         self.consome(tt.END)
 
-    def declara(self):
+    def dc(self):
         print('<dc>')
         if self.atualIgual(tt.REAL) or self.atualIgual(tt.INTEGER):
-            self.declara_var()
-            self.continua_declaracao()
+            self.dc_v()
+            self.mais_dc()
 
-    def continua_declaracao(self):
+    def mais_dc(self):
         print('<mais_dc>')
         if self.atualIgual(tt.PVIRG):
             self.consome(tt.PVIRG)
-            self.declara()
+            self.dc()
 
-    def declara_var(self):
+    def dc_v(self):
         print('<dc_v>')
-        self.tipo_variavel()
+        self.tipo_var()
 
         self.consome(tt.DPONTOS)
         self.variaveis()
 
-    def tipo_variavel(self):
+    def tipo_var(self):
         print('<tipo_var>')
         if self.atualIgual(tt.REAL):
             self.tipo = Semantico('INTEGER', tt.REAL)
