@@ -1,5 +1,5 @@
 # Compiladores - Trabalho final
-## Aluno: Luís Antônio da Silva Dourado - 201621901003
+## Aluno: Luís Antônio da Silva Dourado - <>
 Este repositório possui o código fonte do trabalho final da disciplina de Compiladores I do Instituto de Computação da UFMT.
 
 ## Instalação
